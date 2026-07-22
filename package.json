@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Skill do Claude Code para monitorar consumo de token por sessao (ranking de prompt, breakdown por skill, context window).",
   "scripts": {
-    "test": "node --test tests/"
+    "test": "node --test"
   },
   "dependencies": {
     "ink": "^5.0.1",
