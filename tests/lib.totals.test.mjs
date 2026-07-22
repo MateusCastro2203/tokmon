@@ -13,6 +13,12 @@ test('formatTokenCount formats sub-1000 counts raw and larger counts with a k su
   assert.equal(formatTokenCount(200000), '200.0k');
 });
 
+test('formatTokenCount switches to an M suffix at one million tokens', () => {
+  assert.equal(formatTokenCount(66304300), '66.3M');
+  assert.equal(formatTokenCount(999999), '1000.0k');
+  assert.equal(formatTokenCount(1000000), '1.0M');
+});
+
 test('computeTotals aggregates totals, ranks turns, breaks down by skill, and computes context window', () => {
   const { events } = parseSession(FIXTURE);
   const turns = groupIntoTurns(events);

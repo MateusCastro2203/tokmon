@@ -15,7 +15,10 @@ test('formatStatusLine prefers the stdin-provided context percentage over the co
     topTurns: [{ id: 'u1', ts: '', textPreview: 'x', bySkill: {}, usage: { total: 30525, input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } }],
     bySkill: [],
   };
-  assert.equal(formatStatusLine({ totals, contextWindowOverride: 42 }), '🔥 30.8k tok · ctx 42% · top 30.5k');
+  assert.equal(
+    formatStatusLine({ totals, contextWindowOverride: 42 }),
+    '🔥 sessão: 30.8k tok · contexto: 42% usado · prompt mais caro: 30.5k tok'
+  );
 });
 
 test('statusline.mjs prints a compact line for a valid transcript_path on stdin', () => {
@@ -27,7 +30,7 @@ test('statusline.mjs prints a compact line for a valid transcript_path on stdin'
     input: stdinPayload,
     encoding: 'utf8',
   });
-  assert.equal(output.trim(), '🔥 30.8k tok · ctx 12.5% · top 30.5k');
+  assert.equal(output.trim(), '🔥 sessão: 30.8k tok · contexto: 12.5% usado · prompt mais caro: 30.5k tok');
 });
 
 test('statusline.mjs falls back to a neutral message on invalid stdin', () => {

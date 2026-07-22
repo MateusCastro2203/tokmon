@@ -125,7 +125,8 @@ export const DEFAULT_MODEL_LIMITS = { sonnet: 200000, opus: 200000, haiku: 20000
 
 export function formatTokenCount(n) {
   if (n < 1000) return String(Math.round(n));
-  return `${(n / 1000).toFixed(1)}k`;
+  if (n < 1_000_000) return `${(n / 1000).toFixed(1)}k`;
+  return `${(n / 1_000_000).toFixed(1)}M`;
 }
 
 function resolveModelLimit(modelId, modelLimits) {
@@ -177,10 +178,10 @@ export function computeTotals(events, turns, opts = {}) {
 
 export function formatStatusLine({ totals, contextWindowOverride }) {
   const top = totals.topTurns[0];
-  const parts = [`🔥 ${formatTokenCount(totals.totals.total)} tok`];
+  const parts = [`🔥 sessão: ${formatTokenCount(totals.totals.total)} tok`];
   const pct = contextWindowOverride ?? totals.contextWindow?.usedPercentage ?? null;
-  if (pct !== null) parts.push(`ctx ${pct}%`);
-  if (top) parts.push(`top ${formatTokenCount(top.usage.total)}`);
+  if (pct !== null) parts.push(`contexto: ${pct}% usado`);
+  if (top) parts.push(`prompt mais caro: ${formatTokenCount(top.usage.total)} tok`);
   return parts.join(' · ');
 }
 
