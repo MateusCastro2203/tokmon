@@ -2,11 +2,13 @@
 import { runSnapshot } from '../scripts/snapshot.mjs';
 import { runWatch } from '../scripts/watch.mjs';
 import { runStatusline } from '../scripts/statusline.mjs';
+import { runSetup } from '../scripts/setup.mjs';
 
 function printHelp() {
   console.log(`tokmon — monitor de consumo de token do Claude Code
 
 Uso:
+  tokmon setup [--force]  Configura a integração com o Claude Code (skill, /tokens, statusLine)
   tokmon snapshot [cwd]   Snapshot de texto: total, ranking de prompt, quebra por skill, context window
   tokmon watch [cwd]      Dashboard ao vivo no terminal (atualiza sozinho)
   tokmon statusline       Modo statusLine — lê JSON do stdin (uso interno, configurado em ~/.claude/settings.json)
@@ -17,6 +19,9 @@ async function main() {
   const [subcommand, ...rest] = process.argv.slice(2);
 
   switch (subcommand) {
+    case 'setup':
+      runSetup(rest);
+      break;
     case 'snapshot':
       runSnapshot(rest);
       break;
