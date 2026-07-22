@@ -132,7 +132,7 @@ function resolveModelLimit(modelId, modelLimits) {
   if (!modelId) return 200000;
   const lower = modelId.toLowerCase();
   for (const [key, limit] of Object.entries(modelLimits)) {
-    if (lower.includes(key)) return limit;
+    if (lower.includes(key.toLowerCase())) return limit;
   }
   return 200000;
 }

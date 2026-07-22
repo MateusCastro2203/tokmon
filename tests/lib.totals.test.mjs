@@ -41,3 +41,34 @@ test('computeTotals aggregates totals, ranks turns, breaks down by skill, and co
     usedPercentage: 0.1,
   });
 });
+
+test('resolveModelLimit handles case-insensitive matching on both model id and override keys', () => {
+  const events = [
+    {
+      role: 'assistant',
+      isSidechain: false,
+      model: 'claude-opus-4-1',
+      usage: {
+        input_tokens: 100,
+        output_tokens: 50,
+        cache_creation_input_tokens: 0,
+        cache_read_input_tokens: 0,
+      },
+    },
+  ];
+  const turns = [
+    {
+      id: 'test-turn',
+      ts: new Date().toISOString(),
+      textPreview: 'test',
+      usage: { input_tokens: 100, output_tokens: 50, cache_creation_input_tokens: 0, cache_read_input_tokens: 0, total: 150 },
+      bySkill: { main: 150 },
+    },
+  ];
+  const totals = computeTotals(events, turns, {
+    modelLimits: { Opus: 500000 },
+  });
+
+  assert.equal(totals.contextWindow.contextWindowSize, 500000);
+  assert.equal(totals.contextWindow.totalInputTokens, 100);
+});
