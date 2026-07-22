@@ -88,3 +88,35 @@ export function parseSession(filePath) {
   }
   return { events, warnings };
 }
+
+export function groupIntoTurns(events) {
+  const turns = [];
+  let current = null;
+  for (const event of events) {
+    if (event.role === 'user' && event.isRealUserText && !event.isSidechain) {
+      current = {
+        id: event.uuid,
+        ts: event.ts,
+        textPreview: event.textPreview ?? '',
+        usage: { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0, total: 0 },
+        bySkill: {},
+      };
+      turns.push(current);
+      continue;
+    }
+    if (!current || !event.usage) continue;
+    const bucket = event.isSidechain ? (event.attributionSkill ?? 'subagent') : 'main';
+    const turnTotal =
+      event.usage.input_tokens +
+      event.usage.output_tokens +
+      event.usage.cache_creation_input_tokens +
+      event.usage.cache_read_input_tokens;
+    current.usage.input_tokens += event.usage.input_tokens;
+    current.usage.output_tokens += event.usage.output_tokens;
+    current.usage.cache_creation_input_tokens += event.usage.cache_creation_input_tokens;
+    current.usage.cache_read_input_tokens += event.usage.cache_read_input_tokens;
+    current.usage.total += turnTotal;
+    current.bySkill[bucket] = (current.bySkill[bucket] ?? 0) + turnTotal;
+  }
+  return turns;
+}
