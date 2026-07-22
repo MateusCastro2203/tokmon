@@ -8,6 +8,7 @@ import {
   groupIntoTurns,
   computeTotals,
   buildViewModel,
+  isMainModule,
 } from './lib.mjs';
 
 function loadViewModel(cwd) {
@@ -103,6 +104,6 @@ export async function runWatch(argv = process.argv.slice(2)) {
   ink.render(h(App, { cwd }));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   runWatch();
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
-import { parseSession, groupIntoTurns, computeTotals, formatStatusLine } from './lib.mjs';
+import { parseSession, groupIntoTurns, computeTotals, formatStatusLine, isMainModule } from './lib.mjs';
 
 export function runStatusline() {
   let input;
@@ -28,6 +28,6 @@ export function runStatusline() {
   console.log(formatStatusLine({ totals, contextWindowOverride }));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   runStatusline();
 }

@@ -7,6 +7,7 @@ import {
   groupIntoTurns,
   computeTotals,
   formatSnapshot,
+  isMainModule,
 } from './lib.mjs';
 
 export function runSnapshot(argv = process.argv.slice(2)) {
@@ -26,6 +27,6 @@ export function runSnapshot(argv = process.argv.slice(2)) {
   console.log(formatSnapshot(totals, { sessionId, projectLabel: path.basename(cwd), warnings }));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (isMainModule(import.meta.url)) {
   runSnapshot();
 }

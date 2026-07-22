@@ -1,8 +1,17 @@
-import { readdirSync, statSync, existsSync, readFileSync } from 'node:fs';
+import { readdirSync, statSync, existsSync, readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 
 export function encodeProjectDir(cwd) {
   return cwd.replace(/[\/._]/g, '-');
+}
+
+export function isMainModule(moduleUrl) {
+  if (!process.argv[1]) return false;
+  try {
+    return moduleUrl === `file://${realpathSync(process.argv[1])}`;
+  } catch {
+    return false;
+  }
 }
 
 export function listSessionFiles(projectDir) {
