@@ -175,6 +175,15 @@ export function computeTotals(events, turns, opts = {}) {
   return { totals, bySkill, topTurns, contextWindow };
 }
 
+export function formatStatusLine({ totals, contextWindowOverride }) {
+  const top = totals.topTurns[0];
+  const parts = [`🔥 ${formatTokenCount(totals.totals.total)} tok`];
+  const pct = contextWindowOverride ?? totals.contextWindow?.usedPercentage ?? null;
+  if (pct !== null) parts.push(`ctx ${pct}%`);
+  if (top) parts.push(`top ${formatTokenCount(top.usage.total)}`);
+  return parts.join(' · ');
+}
+
 export function formatSnapshot(totals, meta) {
   const { sessionId, projectLabel, warnings = 0, topN = 5 } = meta;
   const lines = [];
