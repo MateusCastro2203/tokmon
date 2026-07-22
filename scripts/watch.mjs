@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import React, { useState, useEffect } from 'react';
 import { watch } from 'node:fs';
 import path from 'node:path';
 import {
@@ -10,8 +9,6 @@ import {
   computeTotals,
   buildViewModel,
 } from './lib.mjs';
-
-const h = React.createElement;
 
 function loadViewModel(cwd) {
   const home = process.env.HOME ?? '';
@@ -28,7 +25,7 @@ function loadViewModel(cwd) {
   };
 }
 
-function createApp({ Box, Text }) {
+function createApp({ Box, Text, useState, useEffect, h }) {
   return function App({ cwd }) {
     const [state, setState] = useState(() => loadViewModel(cwd));
 
@@ -62,15 +59,16 @@ function createApp({ Box, Text }) {
 }
 
 async function main() {
-  let ink;
+  let React, ink;
   try {
-    ink = await import('ink');
+    [{ default: React }, ink] = await Promise.all([import('react'), import('ink')]);
   } catch {
     console.error('token-monitor: dependências não instaladas. Rode `npm install` na pasta da skill (~/.claude/skills/token-monitor).');
     process.exitCode = 1;
     return;
   }
-  const App = createApp(ink);
+  const h = React.createElement;
+  const App = createApp({ Box: ink.Box, Text: ink.Text, useState: React.useState, useEffect: React.useEffect, h });
   const cwd = process.argv[2] ?? process.cwd();
   ink.render(h(App, { cwd }));
 }
