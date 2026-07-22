@@ -32,4 +32,4 @@ node ~/.claude/skills/token-monitor/scripts/watch.mjs
 
 ## Statusline (visão passiva, sem rodar nada)
 
-Se instalado (ver `install.sh`), `scripts/statusline.mjs` fica registrado em `~/.claude/settings.json` (`statusLine`) e mostra uma linha compacta sempre visível no terminal do Claude Code, atualizando sozinha.
+Se `tokmon setup` (ou `install.sh`) já rodou, `scripts/statusline.mjs` fica registrado em `~/.claude/settings.json` (`statusLine`) e mostra uma linha compacta sempre visível no terminal do Claude Code, atualizando sozinha.
