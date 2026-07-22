@@ -1,5 +1,5 @@
 {
-  "name": "claude-token-monitor",
+  "name": "tokmon-app",
   "version": "0.1.0",
   "type": "module",
   "description": "Skill do Claude Code para monitorar consumo de token por sessao (ranking de prompt, breakdown por skill, context window).",
@@ -30,6 +30,14 @@
   ],
   "author": "Mateus Castro",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MateusCastro2203/tokmon.git"
+  },
+  "homepage": "https://github.com/MateusCastro2203/tokmon#readme",
+  "bugs": {
+    "url": "https://github.com/MateusCastro2203/tokmon/issues"
+  },
   "dependencies": {
     "ink": "^5.0.1",
     "react": "^18.3.1"

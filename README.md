@@ -1,4 +1,4 @@
-# claude-token-monitor
+# tokmon
 
 Skill do [Claude Code](https://claude.com/claude-code) que lê o transcript JSONL que o próprio Claude Code já grava por sessão e mostra: total de tokens gasto, ranking de qual prompt custou mais, quebra por skill/subagente, e % de context window usado. Sem hook, sem API externa, sem auth — só lê o arquivo que já existe em `~/.claude/projects/<projeto>/<sessão>.jsonl`.
 
@@ -7,7 +7,7 @@ Fora de escopo: custo em $, e cota/limite de plano (5h/semanal/mensal) — isso 
 ## Instalar
 
 ```bash
-npm install -g claude-token-monitor
+npm install -g tokmon-app
 ```
 
 Isso expõe o comando `tokmon` no seu terminal.
@@ -42,7 +42,7 @@ tokmon help            # ajuda
 Pra ter a skill disponível dentro do próprio Claude Code (slash command `/tokens` + statusline nativa sempre visível), rode o instalador depois de instalar o pacote:
 
 ```bash
-$(npm root -g)/claude-token-monitor/install.sh
+$(npm root -g)/tokmon-app/install.sh
 ```
 
 Isso:
@@ -53,8 +53,8 @@ Isso:
 ## Desenvolvimento
 
 ```bash
-git clone <repo>
-cd claude-token-monitor
+git clone git@github.com:MateusCastro2203/tokmon.git
+cd tokmon
 npm install
 npm link        # expõe `tokmon` local pra testar sem publicar
 npm test        # node:test — sem dependência extra de test runner
