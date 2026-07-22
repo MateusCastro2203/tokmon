@@ -228,3 +228,27 @@ export function formatSnapshot(totals, meta) {
   }
   return lines.join('\n');
 }
+
+export function buildViewModel(totals, meta) {
+  const { sessionId, projectLabel, warnings = 0 } = meta;
+  return {
+    header: `token-monitor — ${projectLabel} (${sessionId})`,
+    totalsLine: `Total: ${formatTokenCount(totals.totals.total)} tok  (in ${formatTokenCount(
+      totals.totals.input_tokens
+    )} / out ${formatTokenCount(totals.totals.output_tokens)} / cache-w ${formatTokenCount(
+      totals.totals.cache_creation_input_tokens
+    )} / cache-r ${formatTokenCount(totals.totals.cache_read_input_tokens)})`,
+    contextLine: totals.contextWindow
+      ? `Context window: ${totals.contextWindow.usedPercentage}% (${formatTokenCount(
+          totals.contextWindow.totalInputTokens
+        )} / ${formatTokenCount(totals.contextWindow.contextWindowSize)})`
+      : 'Context window: sem dados ainda',
+    topRows: totals.topTurns.slice(0, 8).map((turn, i) => ({
+      rank: i + 1,
+      tokens: formatTokenCount(turn.usage.total),
+      preview: turn.textPreview,
+    })),
+    skillRows: totals.bySkill.map(({ skill, total }) => ({ skill, tokens: formatTokenCount(total) })),
+    warningsLine: warnings > 0 ? `${warnings} linha(s) ignorada(s) (log corrompido)` : null,
+  };
+}
