@@ -120,3 +120,57 @@ export function groupIntoTurns(events) {
   }
   return turns;
 }
+
+export const DEFAULT_MODEL_LIMITS = { sonnet: 200000, opus: 200000, haiku: 200000 };
+
+export function formatTokenCount(n) {
+  if (n < 1000) return String(Math.round(n));
+  return `${(n / 1000).toFixed(1)}k`;
+}
+
+function resolveModelLimit(modelId, modelLimits) {
+  if (!modelId) return 200000;
+  const lower = modelId.toLowerCase();
+  for (const [key, limit] of Object.entries(modelLimits)) {
+    if (lower.includes(key)) return limit;
+  }
+  return 200000;
+}
+
+export function computeTotals(events, turns, opts = {}) {
+  const modelLimits = opts.modelLimits ?? DEFAULT_MODEL_LIMITS;
+
+  const totals = { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0, total: 0 };
+  const bySkillMap = {};
+  for (const turn of turns) {
+    totals.input_tokens += turn.usage.input_tokens;
+    totals.output_tokens += turn.usage.output_tokens;
+    totals.cache_creation_input_tokens += turn.usage.cache_creation_input_tokens;
+    totals.cache_read_input_tokens += turn.usage.cache_read_input_tokens;
+    totals.total += turn.usage.total;
+    for (const [skill, tokens] of Object.entries(turn.bySkill)) {
+      bySkillMap[skill] = (bySkillMap[skill] ?? 0) + tokens;
+    }
+  }
+  const bySkill = Object.entries(bySkillMap)
+    .map(([skill, total]) => ({ skill, total }))
+    .sort((a, b) => b.total - a.total);
+  const topTurns = [...turns].sort((a, b) => b.usage.total - a.usage.total);
+
+  let contextWindow = null;
+  const lastMainAssistant = [...events].reverse().find((e) => e.role === 'assistant' && !e.isSidechain && e.usage);
+  if (lastMainAssistant) {
+    const totalInputTokens =
+      lastMainAssistant.usage.input_tokens +
+      lastMainAssistant.usage.cache_read_input_tokens +
+      lastMainAssistant.usage.cache_creation_input_tokens;
+    const contextWindowSize = resolveModelLimit(lastMainAssistant.model, modelLimits);
+    contextWindow = {
+      totalInputTokens,
+      contextWindowSize,
+      usedPercentage: Math.round((totalInputTokens / contextWindowSize) * 1000) / 10,
+    };
+  }
+
+  return { totals, bySkill, topTurns, contextWindow };
+}
