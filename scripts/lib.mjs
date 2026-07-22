@@ -174,3 +174,48 @@ export function computeTotals(events, turns, opts = {}) {
 
   return { totals, bySkill, topTurns, contextWindow };
 }
+
+export function formatSnapshot(totals, meta) {
+  const { sessionId, projectLabel, warnings = 0, topN = 5 } = meta;
+  const lines = [];
+  lines.push(`Sessão ativa: ${sessionId} (${projectLabel})`);
+  const t = totals.totals;
+  lines.push(
+    `Total: ${formatTokenCount(t.total)} tok  (in ${formatTokenCount(t.input_tokens)} / out ${formatTokenCount(
+      t.output_tokens
+    )} / cache-w ${formatTokenCount(t.cache_creation_input_tokens)} / cache-r ${formatTokenCount(
+      t.cache_read_input_tokens
+    )})`
+  );
+  if (totals.contextWindow) {
+    lines.push(
+      `Context window: ${totals.contextWindow.usedPercentage}% (${formatTokenCount(
+        totals.contextWindow.totalInputTokens
+      )} / ${formatTokenCount(totals.contextWindow.contextWindowSize)})`
+    );
+  }
+  lines.push('');
+  lines.push('Top prompts:');
+  const top = totals.topTurns.slice(0, topN);
+  if (top.length === 0) {
+    lines.push(' (nenhum prompt registrado ainda)');
+  } else {
+    top.forEach((turn, i) => {
+      lines.push(` ${i + 1}. ${formatTokenCount(turn.usage.total)}  "${turn.textPreview}"`);
+    });
+  }
+  lines.push('');
+  lines.push('Por skill/agente:');
+  if (totals.bySkill.length === 0) {
+    lines.push(' (sem dados)');
+  } else {
+    totals.bySkill.forEach(({ skill, total }) => {
+      lines.push(` ${skill.padEnd(12)} ${formatTokenCount(total)}`);
+    });
+  }
+  if (warnings > 0) {
+    lines.push('');
+    lines.push(`(${warnings} linha(s) de log ignorada(s) por estarem corrompidas)`);
+  }
+  return lines.join('\n');
+}
