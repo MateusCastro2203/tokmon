@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, writeFileSync, utimesSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, utimesSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { encodeProjectDir, findActiveSession, listSessionFiles } from '../scripts/lib.mjs';
@@ -29,4 +29,15 @@ test('findActiveSession returns the most recently modified session, null when no
   const file = path.join(dir, 'session-a.jsonl');
   writeFileSync(file, '{}\n');
   assert.equal(findActiveSession(dir), file);
+});
+
+test('listSessionFiles and findActiveSession handle nonexistent project directory gracefully', () => {
+  const baseDir = mkdtempSync(path.join(tmpdir(), 'token-monitor-'));
+  const nonexistentDir = path.join(baseDir, 'does-not-exist');
+  // Assert the directory truly does not exist
+  assert.equal(existsSync(nonexistentDir), false);
+  // listSessionFiles should return empty array without throwing
+  assert.deepEqual(listSessionFiles(nonexistentDir), []);
+  // findActiveSession should return null without throwing
+  assert.equal(findActiveSession(nonexistentDir), null);
 });
