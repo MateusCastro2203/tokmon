@@ -31,6 +31,15 @@ function isRealUserMessage(entry) {
   return false;
 }
 
+export function truncatePreview(text, maxLen = 60) {
+  const trimmed = text.trim().replace(/\s+/g, ' ');
+  if (trimmed.length <= maxLen) return trimmed;
+  const sliced = trimmed.slice(0, maxLen);
+  const lastSpace = sliced.lastIndexOf(' ');
+  const cut = lastSpace > 0 ? sliced.slice(0, lastSpace) : sliced;
+  return `${cut}…`;
+}
+
 function extractTextPreview(entry) {
   const content = entry.message?.content;
   let text = null;
@@ -40,8 +49,7 @@ function extractTextPreview(entry) {
     text = block?.text ?? null;
   }
   if (!text) return null;
-  const trimmed = text.trim().replace(/\s+/g, ' ');
-  return trimmed.length > 60 ? `${trimmed.slice(0, 60)}…` : trimmed;
+  return truncatePreview(text);
 }
 
 function normalizeEvent(entry) {
@@ -232,18 +240,23 @@ export function formatSnapshot(totals, meta) {
 
 export function buildViewModel(totals, meta) {
   const { sessionId, projectLabel, warnings = 0 } = meta;
+  const pct = totals.contextWindow?.usedPercentage ?? null;
+  const contextSeverity = pct === null ? null : pct >= 80 ? 'danger' : pct >= 50 ? 'warn' : 'ok';
   return {
     header: `token-monitor — ${projectLabel} (${sessionId})`,
-    totalsLine: `Total: ${formatTokenCount(totals.totals.total)} tok  (in ${formatTokenCount(
-      totals.totals.input_tokens
-    )} / out ${formatTokenCount(totals.totals.output_tokens)} / cache-w ${formatTokenCount(
-      totals.totals.cache_creation_input_tokens
-    )} / cache-r ${formatTokenCount(totals.totals.cache_read_input_tokens)})`,
-    contextLine: totals.contextWindow
-      ? `Context window: ${totals.contextWindow.usedPercentage}% (${formatTokenCount(
-          totals.contextWindow.totalInputTokens
-        )} / ${formatTokenCount(totals.contextWindow.contextWindowSize)})`
-      : 'Context window: sem dados ainda',
+    totalTokens: formatTokenCount(totals.totals.total),
+    breakdown: `in ${formatTokenCount(totals.totals.input_tokens)} · out ${formatTokenCount(
+      totals.totals.output_tokens
+    )} · cache-w ${formatTokenCount(totals.totals.cache_creation_input_tokens)} · cache-r ${formatTokenCount(
+      totals.totals.cache_read_input_tokens
+    )}`,
+    contextPercentage: pct,
+    contextSeverity,
+    contextDetail: totals.contextWindow
+      ? `${formatTokenCount(totals.contextWindow.totalInputTokens)} / ${formatTokenCount(
+          totals.contextWindow.contextWindowSize
+        )}`
+      : null,
     topRows: totals.topTurns.slice(0, 8).map((turn, i) => ({
       rank: i + 1,
       tokens: formatTokenCount(turn.usage.total),
