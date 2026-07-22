@@ -9,8 +9,8 @@ import {
   formatSnapshot,
 } from './lib.mjs';
 
-function main() {
-  const cwd = process.argv[2] ?? process.cwd();
+export function runSnapshot(argv = process.argv.slice(2)) {
+  const cwd = argv[0] ?? process.cwd();
   const home = process.env.HOME ?? '';
   const projectDir = path.join(home, '.claude', 'projects', encodeProjectDir(cwd));
   const sessionFile = findActiveSession(projectDir);
@@ -26,4 +26,6 @@ function main() {
   console.log(formatSnapshot(totals, { sessionId, projectLabel: path.basename(cwd), warnings }));
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runSnapshot();
+}

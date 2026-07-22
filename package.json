@@ -1,12 +1,35 @@
 {
   "name": "claude-token-monitor",
   "version": "0.1.0",
-  "private": true,
   "type": "module",
   "description": "Skill do Claude Code para monitorar consumo de token por sessao (ranking de prompt, breakdown por skill, context window).",
+  "bin": {
+    "tokmon": "./bin/tokmon.mjs"
+  },
+  "files": [
+    "bin",
+    "scripts",
+    "commands",
+    "SKILL.md",
+    "install.sh",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "test": "node --test"
   },
+  "keywords": [
+    "claude-code",
+    "cli",
+    "token-usage",
+    "monitor",
+    "dashboard"
+  ],
+  "author": "Mateus Castro",
+  "license": "MIT",
   "dependencies": {
     "ink": "^5.0.1",
     "react": "^18.3.1"

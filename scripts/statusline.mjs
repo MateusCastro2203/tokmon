@@ -2,7 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { parseSession, groupIntoTurns, computeTotals, formatStatusLine } from './lib.mjs';
 
-function main() {
+export function runStatusline() {
   let input;
   try {
     input = JSON.parse(readFileSync(0, 'utf8'));
@@ -28,4 +28,6 @@ function main() {
   console.log(formatStatusLine({ totals, contextWindowOverride }));
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runStatusline();
+}

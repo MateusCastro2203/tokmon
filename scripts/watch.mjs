@@ -88,7 +88,7 @@ function createApp({ Box, Text, useState, useEffect, h }) {
   };
 }
 
-async function main() {
+export async function runWatch(argv = process.argv.slice(2)) {
   let React, ink;
   try {
     [{ default: React }, ink] = await Promise.all([import('react'), import('ink')]);
@@ -99,8 +99,10 @@ async function main() {
   }
   const h = React.createElement;
   const App = createApp({ Box: ink.Box, Text: ink.Text, useState: React.useState, useEffect: React.useEffect, h });
-  const cwd = process.argv[2] ?? process.cwd();
+  const cwd = argv[0] ?? process.cwd();
   ink.render(h(App, { cwd }));
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runWatch();
+}
