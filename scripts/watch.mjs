@@ -10,6 +10,7 @@ import {
   buildViewModel,
   isMainModule,
 } from './lib.mjs';
+import { DRAGON_SPRITE_ROWS, DRAGON_PALETTE, hpBarSegments } from './dragon-sprite.mjs';
 
 function loadViewModel(cwd) {
   const home = process.env.HOME ?? '';
@@ -24,6 +25,47 @@ function loadViewModel(cwd) {
     model: buildViewModel(totals, { sessionId, projectLabel: path.basename(cwd), warnings }),
     sessionFile,
   };
+}
+
+function renderDragonSprite({ Box, Text, h }) {
+  return h(
+    Box,
+    { flexDirection: 'column' },
+    ...DRAGON_SPRITE_ROWS.map((row, y) =>
+      h(
+        Text,
+        { key: `row-${y}` },
+        ...row.split('').map((code, x) => h(Text, { key: x, backgroundColor: DRAGON_PALETTE[code] }, '  '))
+      )
+    )
+  );
+}
+
+function renderStatsPanel({ Box, Text, h }, model, contextColor) {
+  const bar = hpBarSegments(model.contextPercentage);
+  return h(
+    Box,
+    { flexDirection: 'column', marginLeft: 2 },
+    h(Text, { bold: true, color: 'cyan' }, model.header),
+    h(Text, null, ' '),
+    h(Text, null, `🔥 Total: ${model.totalTokens} tok`),
+    h(Text, { dimColor: true }, model.breakdown),
+    h(Text, null, ' '),
+    model.contextPercentage !== null
+      ? h(
+          Text,
+          null,
+          'CTX ',
+          h(Text, { color: contextColor }, '█'.repeat(bar.filled)),
+          h(Text, { dimColor: true }, '░'.repeat(bar.empty)),
+          ` ${model.contextPercentage}% (${model.contextDetail})`
+        )
+      : h(Text, { dimColor: true }, 'CTX sem dados ainda'),
+    h(Text, null, ' '),
+    model.topRows[0]
+      ? h(Text, { dimColor: true }, `Top: "${model.topRows[0].preview}"`)
+      : h(Text, { dimColor: true }, 'Top: (nenhum prompt registrado ainda)')
+  );
 }
 
 function createApp({ Box, Text, useState, useEffect, h }) {
@@ -56,13 +98,9 @@ function createApp({ Box, Text, useState, useEffect, h }) {
       { flexDirection: 'column' },
       h(
         Box,
-        { flexDirection: 'column', borderStyle: 'round', borderColor: 'cyan', paddingX: 1, marginBottom: 1 },
-        h(Text, { bold: true, color: 'cyan' }, model.header),
-        h(Text, null, `🔥 Total: ${model.totalTokens} tok`),
-        h(Text, { dimColor: true }, `   ${model.breakdown}`),
-        model.contextPercentage !== null
-          ? h(Text, { color: contextColor }, `🧠 Contexto: ${model.contextPercentage}% usado (${model.contextDetail})`)
-          : h(Text, { dimColor: true }, '🧠 Contexto: sem dados ainda')
+        { flexDirection: 'row', borderStyle: 'round', borderColor: 'cyan', paddingX: 1, marginBottom: 1 },
+        renderDragonSprite({ Box, Text, h }),
+        renderStatsPanel({ Box, Text, h }, model, contextColor)
       ),
       h(
         Box,
