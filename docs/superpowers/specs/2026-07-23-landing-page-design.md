@@ -38,6 +38,10 @@ Aprovado interativamente via superpowers:brainstorming visual companion (mockups
    - Abaixo do console: bloco de terminal real (fundo escuro `#161616`) mostrando um trecho de saída de texto verdadeira do `tokmon watch`, pra quem quiser ver o output real sem o filtro do easter egg.
 5. **Footer:** `MIT License · feito com 🔥 por Mateus Castro` à esquerda, link do GitHub à direita.
 
+### Atualização pós-implementação (revisão visual final)
+
+Depois de ver a página real e o `tokmon watch` rodando de verdade lado a lado, o easter egg "TOKMON POCKET" (console fictício) foi **removido**. Em vez disso, a seção "Veja rodando" reproduz literalmente os 3 painéis reais do `tokmon watch` (cabeçalho com dragão+stats/CTX bar, Top prompts, Por skill/agente), dentro de uma janela de terminal escura — sem chrome de dispositivo fictício, sem D-pad/botões decorativos. Motivo: consistência — o produto de verdade já é bonito o suficiente, e uma reprodução fiel gera mais confiança do que uma metáfora fictícia que diverge do output real. O mascote no hero (grande, com a chama piscando sutilmente) continua como está.
+
 ## Implementação
 
 - Arquivo único: `docs/index.html` no repo `tokmon` (raiz do conteúdo servido pelo GitHub Pages a partir da pasta `/docs` da branch `master`).
