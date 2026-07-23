@@ -27,18 +27,32 @@ function loadViewModel(cwd) {
   };
 }
 
+// Packs 2 sprite rows into 1 terminal row using the ▀ (upper half block)
+// trick: foreground = top pixel, background = bottom pixel. Halves both the
+// width (1 char/pixel instead of 2) and the height (2 sprite rows/line) of
+// the previous flat-block rendering, and the character's own ~1:2 aspect
+// ratio makes each original square sprite pixel read correctly proportioned.
 function renderDragonSprite({ Box, Text, h }) {
-  return h(
-    Box,
-    { flexDirection: 'column' },
-    ...DRAGON_SPRITE_ROWS.map((row, y) =>
+  const lines = [];
+  for (let i = 0; i < DRAGON_SPRITE_ROWS.length; i += 2) {
+    const top = DRAGON_SPRITE_ROWS[i];
+    const bottom = DRAGON_SPRITE_ROWS[i + 1] ?? '.'.repeat(top.length);
+    lines.push(
       h(
         Text,
-        { key: `row-${y}` },
-        ...row.split('').map((code, x) => h(Text, { key: x, backgroundColor: DRAGON_PALETTE[code] }, '  '))
+        { key: `row-${i}` },
+        ...top.split('').map((topCode, x) => {
+          const topColor = DRAGON_PALETTE[topCode];
+          const bottomColor = DRAGON_PALETTE[bottom[x]];
+          if (!topColor && !bottomColor) return h(Text, { key: x }, ' ');
+          if (topColor && !bottomColor) return h(Text, { key: x, color: topColor }, '▀');
+          if (!topColor && bottomColor) return h(Text, { key: x, color: bottomColor }, '▄');
+          return h(Text, { key: x, color: topColor, backgroundColor: bottomColor }, '▀');
+        })
       )
-    )
-  );
+    );
+  }
+  return h(Box, { flexDirection: 'column' }, ...lines);
 }
 
 function renderStatsPanel({ Box, Text, h }, model, contextColor) {
