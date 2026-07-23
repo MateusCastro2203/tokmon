@@ -32,8 +32,8 @@ tokmon help            # ajuda
 │ 🧠 Contexto: 70.1% usado (140.2k / 200.0k)         │
 ╰────────────────────────────────────────────────────╯
 ╭─ 🏆 Top prompts ──────────────────────────────────╮
-│  1.    6.0M  "Base directory for this skill..."    │
-│  2.    1.5M  "coloque a experiencia em mobile..."  │
+│  1.    6.0M  "refatora o módulo de autenticação..." │
+│  2.    1.5M  "explica por que esse teste falha..." │
 ╰────────────────────────────────────────────────────╯
 ╭─ 🧩 Por skill/agente ─────────────────────────────╮
 │  main            7.7M                             │
